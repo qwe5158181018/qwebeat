@@ -186,12 +186,14 @@
 		document.getElementById("score").innerHTML = score
 		document.getElementById('acc').innerHTML = "完成率：0%";
 		_nk = document.querySelector('input[name="nk"]:checked').value;
+		document.getElementById("start").disabled = true;
 		gametimeout = window.setTimeout(gaming,500);
 		
 		}
 	//结束
 	function stop(){
-		window.clearTimeout(gametimeout)}
+		window.clearTimeout(gametimeout);
+		document.getElementById("start").disabled = false;}
 	//生成键
 	let turn = 0;
 	function gaming(){
@@ -226,7 +228,7 @@
 			_note.src = "tap.jpg";
 			_note.className = "notes";
 			_note.style.animationDuration = (Math.floor(5000/speed)).toString()+"ms";
-			this.whetherclicked = "false"
+			this.whetherclicked = "false";
 			_note.id = noteid.toString();
 			if(i == 1){
 				_note.style.left = "21.5%"
@@ -281,6 +283,7 @@
 		if(crtnoteamount >= qtt){
 			document.getElementById("quantity").value = crtnoteamount;
 			quantitychanging();
+			document.getElementById("start").disabled = false;
 			}
 		else{
 			if(turn == rest){
@@ -342,6 +345,7 @@
 			},false);
 		
 		tappednote.style.animationPlayState = "running";
+		//处理combo
 		if(whetherbad == 0){
 			combo+=1;	
 			if(combo>maxcombo){
@@ -377,7 +381,7 @@
 <body>
 <div>
 	<div id = "leftside">
-		<button onclick = "start()">开始</button><button onclick = "stop()">结束</button><br>
+		<button id = "start" onclick = "start()">开始</button><button onclick = "stop()">结束</button><br>
 		<form>
 		<p>物量：</p>
 		<input id = "quantity" type = "number" value = 20 min = "1" onchange = "quantitychanging()" style="width: 90px;"><br>
@@ -414,4 +418,5 @@
 	</div>
 </div>
 </body>
+
 </html>
