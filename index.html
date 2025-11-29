@@ -341,11 +341,13 @@
 		if(timediff <=160 && timediff > 80){
 			tappednote.src ="good.jpg";
 			score += 687;
+			combo+=1;
 			whetherbad = 0;
 			}
 		else if(timediff <=80){
 			tappednote.src ="perfect.jpg";
 			score += 1000;
+			combo+=1;
 			whetherbad = 0;
 			}
 		notetime.shift();
@@ -365,8 +367,7 @@
 		
 		tappednote.style.animationPlayState = "running";
 		//处理combo
-		if(whetherbad == 0){
-			combo+=1;	
+		if(whetherbad == 0){	
 			if(combo>maxcombo){
 				maxcombo = combo;
 				document.getElementById("maxcombo").innerHTML = "最大连击："+maxcombo;}
@@ -440,3 +441,4 @@
 </body>
 
 </html>
+
