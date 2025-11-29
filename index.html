@@ -205,22 +205,41 @@
 			notelib = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,4];
 			notenum = notelib[Math.floor(Math.random()*30)];
 			crtnoteamount += notenum;//总键数增加
-			for(let i = 0;i<notenum;i++){
-				let t = 1+Math.floor(Math.random()*4);
-				if(!notepos.includes(t)){
-					notepos.push(t)}
-				else{
-					i--}}}
+			if(notenum == 2){
+				notelib = [[1,3],[1,4],[2,4]];
+				notepos = notelib[Math.floor(Math.random()*3)];}
+			else{
+				for(let i = 0;i<notenum;i++){
+					let t = 1+Math.floor(Math.random()*4);
+					if(!notepos.includes(t)){
+						notepos.push(t)}
+					else{
+						i--}
+				}
+			}
+		}
+			
 		if(_nk == 2){
 			notelib = [1,1,1,1,2]
 			notenum = notelib[Math.floor(Math.random()*5)];
 			crtnoteamount += notenum;//总键数增加
-			for(let i = 0;i<notenum;i++){
+			/*for(let i = 0;i<notenum;i++){
 				let t = 1+Math.floor(Math.random()*4);
 				if(!notepos.includes(t)){
 					notepos.push(t)}
 				else{
-					i--}}}
+					i--}}*/
+			if(notenum==1)
+			{
+				notepos.push(1+Math.floor(Math.random()*4))}
+			else{
+				notelib = [[1,3],[1,4],[2,4]];
+				notepos = notelib[Math.floor(Math.random()*3)];}
+			}
+		if(_nk == 1){
+			notenum = 1;
+			crtnoteamount += notenum;
+			notepos.push(1+Math.floor(Math.random()*4));}	
 		//安放键
 		for(let i of notepos){
 			noteid++;
@@ -393,7 +412,8 @@
 		<input id = "rest" type = "number" value = 20 min = "1" style = "width:90px"><br>
 		<br>
 		<input type = "radio" name = "nk" value = "4" >四指<br>
-		<input type = "radio" name = "nk" value = "2" checked>双指
+		<input type = "radio" name = "nk" value = "2" checked>双指<br>
+		<input type = "radio" name = "nk" value = "1" >纯单键
 		</form>
 	</div>
 	<div id = "middleside" >
