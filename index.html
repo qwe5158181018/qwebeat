@@ -335,37 +335,68 @@
 		timediff = Math.abs(taptime - notetime[0]);
 		if(timediff >160 && timediff <= 240 && taptime<notetime[0])
 		{
+			notetime.shift();
+			tappednotes.shift();
 			tappednote.src ="bad.jpg";
 			whetherbad = 1;
+			let tpnotestyle = getComputedStyle(tappednote);//获取元素计算CSS属性
+			tappednote.style.animationPlayState = "paused";
+			
+			tappednote.whetherclicked = "true";//为元素自定义属性
+			
+			tappednote.style.top = tpnotestyle.top;
+			tappednote.style.animationDuration = "300ms";
+			tappednote.style.animationName = "clicked";
+			tappednote.addEventListener("animationend",function(){
+					this.parentNode.removeChild(this);
+				},false);
+			tappednote.style.animationPlayState = "running";
 		}
 		if(timediff <=160 && timediff > 80){
+			notetime.shift();
+			tappednotes.shift();
 			tappednote.src ="good.jpg";
 			score += 687;
 			combo+=1;
 			whetherbad = 0;
+			let tpnotestyle = getComputedStyle(tappednote);//获取元素计算CSS属性
+			tappednote.style.animationPlayState = "paused";
+			
+			tappednote.whetherclicked = "true";//为元素自定义属性
+			
+			tappednote.style.top = tpnotestyle.top;
+			tappednote.style.animationDuration = "300ms";
+			tappednote.style.animationName = "clicked";
+			tappednote.addEventListener("animationend",function(){
+					this.parentNode.removeChild(this);
+				},false);
+			tappednote.style.animationPlayState = "running";
 			}
 		else if(timediff <=80){
+			notetime.shift();
+			tappednotes.shift();
 			tappednote.src ="perfect.jpg";
 			score += 1000;
 			combo+=1;
 			whetherbad = 0;
+			let tpnotestyle = getComputedStyle(tappednote);//获取元素计算CSS属性
+			tappednote.style.animationPlayState = "paused";
+			
+			tappednote.whetherclicked = "true";//为元素自定义属性
+			
+			tappednote.style.top = tpnotestyle.top;
+			tappednote.style.animationDuration = "300ms";
+			tappednote.style.animationName = "clicked";
+			tappednote.addEventListener("animationend",function(){
+					this.parentNode.removeChild(this);
+				},false);
+			tappednote.style.animationPlayState = "running";
 			}
-		notetime.shift();
-		tappednotes.shift();
 		
-		let tpnotestyle = getComputedStyle(tappednote);//获取元素计算CSS属性
-		tappednote.style.animationPlayState = "paused";
 		
-		tappednote.whetherclicked = "true";//为元素自定义属性
 		
-		tappednote.style.top = tpnotestyle.top;
-		tappednote.style.animationDuration = "300ms";
-		tappednote.style.animationName = "clicked";
-		tappednote.addEventListener("animationend",function(){
-				this.parentNode.removeChild(this);
-			},false);
 		
-		tappednote.style.animationPlayState = "running";
+		
 		//处理combo
 		if(whetherbad == 0){	
 			if(combo>maxcombo){
@@ -441,4 +472,3 @@
 </body>
 
 </html>
-
