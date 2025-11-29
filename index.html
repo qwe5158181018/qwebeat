@@ -275,26 +275,31 @@
 				}
 			//删除键
 			_note.addEventListener("animationend",function(){
-			if(this.whetherclicked != "true"){
-					combo = 0;
-					document.getElementById("combo").style.visibility = "hidden";
-					if(this.parentNode){
-						if(this.parentNode.id == 'S'){
-							s.shift();
-							es.shift();}
-						else if(this.parentNode.id == 'D'){
-							d.shift();
-							ed.shift();}
-						else if(this.parentNode.id == 'J'){
-							j.shift();
-							ej.shift();}
-						else{
-							k.shift();
-							ek.shift();}
-							}
-						this.parentNode.removeChild(this);
-					}
-				},false);
+				if(this.whetherclicked != "true"){
+							this.parentNode.removeChild(this);
+						
+					}},false);
+			_note;
+			window.setTimeout(() => {
+				
+				if(_note.whetherclicked != "true"){
+				combo = 0;
+				document.getElementById("combo").style.visibility = "hidden";
+				if(_note.parentNode){
+					if(_note.parentNode.id == 'S'){
+						s.shift();
+						es.shift();}
+					else if(_note.parentNode.id == 'D'){
+						d.shift();
+						ed.shift();}
+					else if(_note.parentNode.id == 'J'){
+						j.shift();
+						ej.shift();}
+					else{
+						k.shift();
+						ek.shift();}
+						}
+				}},(3125/speed+160));
 			}
 		//空拍与下一轮
 		turn++;
@@ -318,6 +323,7 @@
 		let taptime = Date.now();
 		var notetime;//tap所在队列的时间戳数组
 		var tappednotes;//tap所在队列的元素数组
+		let whetherbad = 0;
 		if(e.id == 'S'){
 			notetime = s;
 			tappednotes = es;}
