@@ -1,4 +1,52 @@
 <html>
+<body>
+<div>
+	<div id = "leftside">
+		<button id = "start" onclick = "start()">开始</button><button onclick = "stop()">结束</button><br>
+		<p>物量：</p>
+		<input id = "quantity" type = "number" value = 200 min = "1" onchange = "quantitychanging()" style="width: 90px;"><br>
+		<p>流速：</p>
+		<input id = "speed" type = "number" value = 5 min = "1" style="width: 90px;">
+		<p>bpm:</p>
+		<input id = "bpm" type = "number" value = 350 min = "1" style = "width:90px">
+		<p>空拍间隔</p>
+		<input id = "rest" type = "number" value = 50 min = "1" style = "width:90px"><br>
+		<br>
+		<input type = "radio" name = "nk" value = "4" >四指<br>
+		<input type = "radio" name = "nk" value = "2" checked>双指<br>
+		<input type = "radio" name = "nk" value = "1" >纯单键<br>
+		<input id = "avoiddouble" type = "checkbox" name = "db"  checked>单手双押规避<br>
+		<input id = "verhical" type = "checkbox" name = "ver"  >纵连规避<br>
+		<input id = "multihelp" type = "checkbox" name = "mul"  checked>多押辅助<br>
+		<input id = "auto" type = "checkbox" name = "auto"  >奥托普雷<br>
+	</div>
+	<div id = "middleside" >
+		<p id = "combo"></p>
+		<div id = "S" onclick = "tap(this)" class = "gamefield" onmousedown = "bemousedown(this)" onmouseup = "bemouseup(this)">	
+		</div>
+		<div id = "D" onclick = "tap(this)" class = "gamefield" onmousedown = "bemousedown(this)" onmouseup = "bemouseup(this)">
+		</div>		
+		<div id = "J" onclick = "tap(this)" class = "gamefield" onmousedown = "bemousedown(this)" onmouseup = "bemouseup(this)">
+		</div>		
+		<div id = "K" onclick = "tap(this)" class = "gamefield" onmousedown = "bemousedown(this)" onmouseup = "bemouseup(this)">
+		</div>
+		<p id = "line"></p>
+		<p id = "csq">perfect</p>
+
+	</div>
+	<div id = "rightside">
+		<p id = "crtnoteamount">当前物量：0</p>
+		<p>总分数：</p><p id = "fullscore">100000</p>
+		<p>分数:</p><p id = "score">0</p>
+		<p id = "acc">完成率：0%</p>
+		<p id = "maxcombo">最大连击：0</p>
+		<p id = "perfect">perfect：0</p>
+		<p id = "good">good：0</p>
+		<p id = "bad">bad：0</p>
+		<p id = "miss">miss：0</p>
+	</div>
+</div>
+</body>
 <head>
 	<style>
 	/*下落动画*/
@@ -10,6 +58,13 @@
 	@keyframes clicked{
 		0%{ opacity:1}
 		100%{transform : scale(1.25,3);opacity:0}
+	}
+	/*文字特效动画*/
+	@keyframes text{
+		0%{top:55%;left:40%;transform : scale(1.5);opacity:0.5;}
+		20%{transform: scale(1);opacity:1;}
+		75%{transform: scale(1);opacity:1;}
+		100%{opacity:0;visibility:hidden;}
 	}
 	#atap{
 		position:fixed;
@@ -35,6 +90,13 @@
 		}
 	#leftside {
 		width :20%;
+		height:100%;
+		position : fixed;
+		
+		}
+	#middleside {
+		left:20%;
+		width :60%;
 		height:100%;
 		position : fixed;
 		
@@ -69,6 +131,22 @@
 		z-index:99;
 		pointer-events: none;
 	}
+	#csq{/*文字特效*/
+		position : fixed;
+		top:55%;left:40%;
+		width:20%;
+		color :gold;
+		text-align:center;
+		z-index:99;
+		pointer-events: none;
+		font-size:200%;
+		animation-name:text;
+		animation-duration:1500ms;
+		animation-timing-function:linear;
+		animation-fill-mode:forwards;
+		visibility:hidden;
+		font-family:Algerian;
+		}
 	#combo{position:fixed;
 		width:5%;
 		left:47.5%;
@@ -102,14 +180,21 @@
 	let _nk = 0;
 	let crtnoteamount = 0;
 	let noteid = 0;
-	
-	var gameinterval ;
+	let perfect = 0;
+	let good = 0;
+	let bad = 0;
+	let miss = 0;
+	let lasttap = 0;//纵连规避用标记符
+	var notesrc ;
 	
 	let S = document.getElementById("S");
 	let D = document.getElementById("D");
 	let J = document.getElementById("J");
 	let K = document.getElementById("K");
-	
+	let _avoidDouble = document.getElementById("avoiddouble");
+	let	_avoidVerhical = document.getElementById("verhical");
+	let multhelp = document.getElementById("multihelp");
+	let autoplay = document.getElementById("auto");
 	//监听键盘点击
 	window.addEventListener("keydown",keylistener1,false);
 	function keylistener1(e){
@@ -181,70 +266,122 @@
 		combo = 0;
 		maxcombo = 0;
 		let whetherbad = 0;
+		perfect = 0;
+		good = 0;
+		bad = 0;
+		miss = 0;
+		lasttap = -1;
+		notesrc = "tap.jpg";
+		document.getElementById("perfect").innerHTML = "perfect：0";
+		document.getElementById("good").innerHTML = "good：0";
+		document.getElementById("miss").innerHTML = "miss：0";
+		document.getElementById("bad").innerHTML = "bad：0";
 		document.getElementById("combo").style.visibility = "hidden";
 		document.getElementById("maxcombo").innerHTML = "最大连击：0";
 		document.getElementById("score").innerHTML = score
 		document.getElementById('acc').innerHTML = "完成率：0%";
 		_nk = document.querySelector('input[name="nk"]:checked').value;
 		document.getElementById("start").disabled = true;
-		gametimeout = window.setTimeout(gaming,500);
+		
+		
+		gametimeout = window.setTimeout(gaming,1000);
 		
 		}
 	//结束
 	function stop(){
 		window.clearTimeout(gametimeout);
-		document.getElementById("start").disabled = false;}
+		document.getElementById("start").disabled = false;
+		let existNotes = document.querySelectorAll(".notes");//括号内为CSS选择器，静态，可以用for循环遍历，getbyclass不行
+		for(i of existNotes){
+			if(i.parentNode){
+				i.parentNode.removeChild(i);
+			}
+		}
+	}
 	//生成键
 	let turn = 0;
 	function gaming(){
 		let notepos = [];//位置
 		let notelib = [];
 		var notenum ;
-		//生成position
+		//生成notenum
 		if(_nk == 4){
 			notelib = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,4];
 			notenum = notelib[Math.floor(Math.random()*30)];
-			crtnoteamount += notenum;//总键数增加
-			if(notenum == 2){
-				notelib = [[1,3],[1,4],[2,4]];
-				notepos = notelib[Math.floor(Math.random()*3)];}
-			else{
-				for(let i = 0;i<notenum;i++){
-					let t = 1+Math.floor(Math.random()*4);
-					if(!notepos.includes(t)){
-						notepos.push(t)}
-					else{
-						i--}
-				}
-			}
+			
 		}
 			
 		if(_nk == 2){
 			notelib = [1,1,1,1,2]
 			notenum = notelib[Math.floor(Math.random()*5)];
+			
+		}
+			
+		if(_nk == 1){
+			notenum = 1;
+			
+		}
+		//生成positon
+		if(notenum == 2){
+			lastnote = -1;
 			crtnoteamount += notenum;//总键数增加
-			/*for(let i = 0;i<notenum;i++){
+			if(_avoidDouble.checked){//单手双押规避
+				notelib = [[1,3],[1,4],[2,4]];
+				notepos = notelib[Math.floor(Math.random()*3)];	
+			}
+			else{
+				for(let i = 0;i<notenum;i++){
+					let t = 1+Math.floor(Math.random()*4);
+					if(!notepos.includes(t)){
+						notepos.push(t);
+					}
+					else{
+						i--;
+					}
+				}
+			}
+		}
+		else if(notenum == 1){
+			crtnoteamount += notenum;//总键数增加
+			if(_avoidVerhical.checked){//纵连规避
+				notelib = [1,2,3,4];
+				notelib.splice(notelib.indexOf(lasttap),1);
+				notepos.push(notelib[Math.floor(Math.random()*notelib.length)]);
+				lasttap = notepos[0];
+			}
+			else{
+				notepos.push(1+Math.floor(Math.random()*4));
+			}
+		}
+		else{
+			lastnote = -1;
+			crtnoteamount += notenum;//总键数增加
+			for(let i = 0;i<notenum;i++){
 				let t = 1+Math.floor(Math.random()*4);
 				if(!notepos.includes(t)){
 					notepos.push(t)}
 				else{
-					i--}}*/
-			if(notenum==1)
-			{
-				notepos.push(1+Math.floor(Math.random()*4))}
-			else{
-				notelib = [[1,3],[1,4],[2,4]];
-				notepos = notelib[Math.floor(Math.random()*3)];}
+					i--}
 			}
-		if(_nk == 1){
-			notenum = 1;
-			crtnoteamount += notenum;
-			notepos.push(1+Math.floor(Math.random()*4));}	
+		}
+		//多押辅助处理
+		if(multihelp.checked){
+			if (notenum != 1){
+				notesrc = "multipleTap.jpg";
+			}
+			else{
+				notesrc = "tap.jpg"
+			}
+		}
+		else{
+			let notesrc = "tap.jpg";
+		}
+		
 		//安放键
 		for(let i of notepos){
 			noteid++;
 			let _note = document.createElement("img");
-			_note.src = "tap.jpg";
+			_note.src = notesrc;
 			_note.className = "notes";
 			_note.style.animationDuration = (Math.floor(5000/speed)).toString()+"ms";
 			this.whetherclicked = "false";
@@ -279,29 +416,44 @@
 							this.parentNode.removeChild(this);
 						
 					}},false);
-			_note;
-			window.setTimeout(() => {
+			window.setTimeout(() => {//miss
 				
-				if(_note.whetherclicked != "true"){
-				_note.style.opacity = "0.3";
+				if(_note.whetherclicked != "true"){//是否未点击
+				_note.style.opacity = "0.3";//miss特效
 				combo = 0;
-				document.getElementById("combo").style.visibility = "hidden";
-				if(_note.parentNode){
+				document.getElementById("combo").style.visibility = "hidden";//断连击
+				miss+=1;//miss计数
+				document.getElementById('miss').innerHTML = "miss："+miss;
+				if(_note.parentNode){//是否以及进行删除
 					if(_note.parentNode.id == 'S'){
 						s.shift();
-						es.shift();}
+						es.shift();
+					}
 					else if(_note.parentNode.id == 'D'){
 						d.shift();
-						ed.shift();}
+						ed.shift();
+					}
 					else if(_note.parentNode.id == 'J'){
 						j.shift();
-						ej.shift();}
+						ej.shift();
+					}
 					else{
 						k.shift();
-						ek.shift();}
-						}
+						ek.shift();
+					}
+				}
+				textse("miss","LightGray");
 				}},(3125/speed+160));
-			}
+			//autoplay
+			if(autoplay.checked){
+				window.setTimeout(()=>{
+					if(_note.parentNode){
+						tap(_note.parentNode)
+					}
+				},3125/speed);
+			}	
+		}
+		
 		//空拍与下一轮
 		turn++;
 		document.getElementById("crtnoteamount").innerHTML = "当前："+crtnoteamount;
@@ -313,7 +465,7 @@
 		else{
 			if(turn == rest){
 				turn = 0;
-				gametimeout = window.setTimeout(gaming,Math.floor(120000/bpm))}
+				gametimeout = window.setTimeout(gaming,Math.floor(500))}
 			
 			else{
 				gametimeout = window.setTimeout(gaming,Math.floor(60000/bpm))}
@@ -340,12 +492,16 @@
 		if(notetime.length>0){
 		tappednote = document.getElementById(tappednotes[0]);
 		timediff = Math.abs(taptime - notetime[0]);
-		if(timediff >160 && timediff <= 240 && taptime<notetime[0])
+		if(timediff >160 && timediff <= 240 && taptime<notetime[0])//bad
 		{
 			notetime.shift();
 			tappednotes.shift();
 			tappednote.src ="bad.jpg";
 			whetherbad = 1;
+			
+			bad+=1;//bad计数
+			document.getElementById('bad').innerHTML = "bad："+bad;
+			//特效处理
 			let tpnotestyle = getComputedStyle(tappednote);//获取元素计算CSS属性
 			tappednote.style.animationPlayState = "paused";
 			
@@ -358,14 +514,18 @@
 					this.parentNode.removeChild(this);
 				},false);
 			tappednote.style.animationPlayState = "running";
+			//文字特效处理
+			textse("bad","#e49e9e");
 		}
-		if(timediff <=160 && timediff > 80){
-			notetime.shift();
-			tappednotes.shift();
-			tappednote.src ="good.jpg";
-			score += 687;
-			combo+=1;
-			whetherbad = 0;
+		if(timediff <=160 && timediff > 80){//good
+			notetime.shift();//删除时间戳
+			tappednotes.shift();//从元素列表删除
+			tappednote.src ="good.jpg";//特效颜色
+			score += 687;//分数增加
+			combo+=1;//combo增加
+			good+=1;//good计数
+			document.getElementById('good').innerHTML = "good："+good;
+			whetherbad = 0;//下文处理连击的判断符号
 			let tpnotestyle = getComputedStyle(tappednote);//获取元素计算CSS属性
 			tappednote.style.animationPlayState = "paused";
 			
@@ -378,13 +538,17 @@
 					this.parentNode.removeChild(this);
 				},false);
 			tappednote.style.animationPlayState = "running";
+			
+			textse("good","#8dc0ff");
 			}
-		else if(timediff <=80){
+		else if(timediff <=80){//perfect
 			notetime.shift();
 			tappednotes.shift();
 			tappednote.src ="perfect.jpg";
 			score += 1000;
 			combo+=1;
+			perfect+=1;//perfect计数
+			document.getElementById('perfect').innerHTML = "perfect："+perfect;
 			whetherbad = 0;
 			let tpnotestyle = getComputedStyle(tappednote);//获取元素计算CSS属性
 			tappednote.style.animationPlayState = "paused";
@@ -398,12 +562,9 @@
 					this.parentNode.removeChild(this);
 				},false);
 			tappednote.style.animationPlayState = "running";
-			}
-		
-		
-		
-		
-		
+			
+			textse("Perfect","gold");
+		}
 		//处理combo
 		if(whetherbad == 0){	
 			if(combo>maxcombo){
@@ -433,51 +594,19 @@
 		else{
 			ek = tappednotes;
 			k = notetime;}	
-		}}
+		}
+	}
+	function textse(t,c){
+			let textcsq = document.getElementById("csq");
+			textcsq.innerHTML = t;
+			textcsq.style.color = c;
+			textcsq.style.animationName = "none";
+			void textcsq.offsetWidth;
+			textcsq.style.animationName = "text";
+			textcsq.style.visibility = "visible";
+		}
 	</script>
 </head>
-<body>
-<div>
-	<div id = "leftside">
-		<button id = "start" onclick = "start()">开始</button><button onclick = "stop()">结束</button><br>
-		<form>
-		<p>物量：</p>
-		<input id = "quantity" type = "number" value = 20 min = "1" onchange = "quantitychanging()" style="width: 90px;"><br>
-		<p>流速：</p>
-		<input id = "speed" type = "number" value = 4 min = "1" style="width: 90px;">
-		<p>bpm:</p>
-		<input id = "bpm" type = "number" value = 240 min = "1" style = "width:90px">
-		<p>空拍间隔</p>
-		<input id = "rest" type = "number" value = 20 min = "1" style = "width:90px"><br>
-		<br>
-		<input type = "radio" name = "nk" value = "4" >四指<br>
-		<input type = "radio" name = "nk" value = "2" checked>双指<br>
-		<input type = "radio" name = "nk" value = "1" >纯单键
-		</form>
-	</div>
-	<div id = "middleside" >
-		<p id = "combo"></p>
-		<div id = "S" onclick = "tap(this)" class = "gamefield" onmousedown = "bemousedown(this)" onmouseup = "bemouseup(this)">	
-		</div>
-		<div id = "D" onclick = "tap(this)" class = "gamefield" onmousedown = "bemousedown(this)" onmouseup = "bemouseup(this)">
-		</div>		
-		<div id = "J" onclick = "tap(this)" class = "gamefield" onmousedown = "bemousedown(this)" onmouseup = "bemouseup(this)">
-		</div>		
-		<div id = "K" onclick = "tap(this)" class = "gamefield" onmousedown = "bemousedown(this)" onmouseup = "bemouseup(this)">
-		</div>
-		<p id = "line"></p>
 
-	</div>
-	<div id = "rightside">
-		<p id = "crtnoteamount">当前物量：0</p>
-		<p>总分数：</p><p id = "fullscore">100000</p></br>
-		<p>分数:</p><p id = "score">0</p></br>
-		<p id = "acc">完成率：0%</p>
-		<p id = "maxcombo">最大连击：0</p>
-	</div>
-</div>
-</body>
 
 </html>
-
-
