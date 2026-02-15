@@ -1,0 +1,89 @@
+<html>
+
+<head>
+	<meta charset="utf-8" name="viewport">
+	<style>
+		@import url("qwebeat.css");
+	</style>
+	<script src='qwebeat.js'></script>
+</head>
+
+<body>
+	<div id="window">
+		<div id="audioDiv"></div>
+		<div id="leftside">
+			<button id="start" onclick="start()">开始</button>
+			<button onclick="stop()">结束</button>
+			<br>
+			<br>
+			<span class="text">物量：</span>
+			<input id="quantity" type="number" value=200 min="1" onchange="quantitychanging()" style="width: 90px;"><br>
+			<span class="text">流速：</span>
+			<input id="speed" type="number" value=5 min="1" style="width: 90px;"><br>
+			<span class="text">bpm:</span>
+			<input id="bpm" type="number" value=350 min="1" style="width:90px"><br>
+			<span class="text">空拍间隔</span>
+			<input id="rest" type="number" value=50 min="1" style="width:90px"><br>
+			<br>
+			<input type="radio" name="nk" value="4"><span class="text">四指</span><br>
+			<input type="radio" name="nk" value="2" checked><span class="text">双指</span><br>
+			<input type="radio" name="nk" value="1"><span class="text">纯单键</span><br>
+			<br>
+			<input id="avoiddouble" type="checkbox" name="db" checked>
+			<span class="text">单手双押规避</span><br>
+			<input id="verhical" type="checkbox" name="ver" checked>
+			<span class="text">纵连规避</span><br>
+			<input id="multihelp" type="checkbox" name="mul" checked>
+			<span class="text">多押辅助</span><br>
+			<input id="auto" type="checkbox" name="auto">
+			<span class="text">奥托普雷</span><br>
+			<br>
+			<input id="nt4" type="radio" name="nt" value="4" checked><span class="text">四轨</span><br>
+			<input id="nt6" type="radio" name="nt" value="6"><span class="text">六轨</span><br>
+			<br>
+			<input id="bgp" type="checkbox" name="bgp" checked onchange="bgp()"><span class="text">bgp</span><br>
+			<input id="audio" type="checkbox" name="audio" checked><span class="text">音效</span><br>
+		</div>
+
+		<div id="middleside">
+			<div id="process"></div>
+			<span id="combo"></span>
+			<div id="A" class="gamefield_6" ontouchstart="ontouchstart(this)" ontouchend="ontouchend(this)">
+			</div>
+			<div id="S" ontouchstart="ontouchstart(this)" ontouchend="ontouchend(this)" class="gamefield_4">
+			</div>
+			<div id="D" ontouchstart="ontouchstart(this)" ontouchend="ontouchend(this)" class="gamefield_4">
+			</div>
+			<div id="J" ontouchstart="ontouchstart(this)" ontouchend="ontouchend(this)" class="gamefield_4">
+			</div>
+			<div id="K" ontouchstart="ontouchstart(this)" ontouchend="ontouchend(this)" class="gamefield_4">
+			</div>
+			<div id="L" ontouchstart="ontouchstart(this)" ontouchend="ontouchend(this)" class="gamefield_6">
+			</div>
+			<span id="line"></span>
+			<span id="csq">perfect</span>
+			<span id="rank">φ</span>
+			<div id="rankingbg"></div>
+		</div>
+		<div id="rightside">
+			<span class="text" id="crtnoteamount">当前物量：0</span><br>
+			<span class="text">总分数：</span>
+			<span class="text" id="fullscore">100000</span><br>
+			<br>
+			<span class="text">分数:</span>
+			<span class="text" id="score">0</span><br>
+			<span class="text" id="acc">完成率：0%</span><br>
+			<br>
+			<span class="text" id="maxcombo">最大连击：0</span><br>
+			<br>
+			<span class="text" id="perfect">perfect：0</span><br>
+			<span class="text" id="good">good：0</span><br>
+			<span class="text" id="bad">bad：0</span><br>
+			<span class="text" id="miss">miss：0</span><br>
+		</div>
+	</div>
+</body>
+
+
+
+</html>
